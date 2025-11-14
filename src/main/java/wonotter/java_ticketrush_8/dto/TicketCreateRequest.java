@@ -10,7 +10,7 @@ public record TicketCreateRequest(
         LocalDateTime endAt
 ) {
 
-    public TicketCreateRequest(String name, Integer totalStock) {
-        this(name, null, totalStock, null, null);
+    public TicketCreateRequest(String name, String description, Integer totalStock) {
+        this(name, description, totalStock, null, null);
     }
 }
