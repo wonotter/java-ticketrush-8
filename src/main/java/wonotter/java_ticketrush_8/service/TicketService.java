@@ -37,20 +37,23 @@ public class TicketService {
     }
 
     /**
-     * 선착순 티켓 구매 로직 현재 동시성 제어가 없으므로 문제가 발생함!
+     * 선착순 티켓 구매 로직: 현재 동시성 제어가 없으므로 문제가 발생함!
      */
     @Transactional
     public Long orderTicket(Long ticketId, Long userId) {
+        // 여러 스레드가 동시에 같은 값을 읽을 수 있음
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TICKET_NOT_FOUND.getMessage()));
 
         ticket.validateEventPeriod();
 
+        // 이미 구매했는지 확인하기 전에 다른 스레드가 끼어들 수 있음
         ticketOrderRepository.findByTicketIdAndUserId(ticketId, userId)
                 .ifPresent(order -> {
                     throw new IllegalArgumentException(ErrorMessage.TICKET_ALREADY_ORDERED.getMessage());
                 });
 
+        // 재고 확인과 감소 사이에 다른 스레드가 끼어들 수 있음
         if (!ticket.hasStock()) {
             throw new IllegalArgumentException(ErrorMessage.STOCK_NOT_AVAILABLE.getMessage());
         }
