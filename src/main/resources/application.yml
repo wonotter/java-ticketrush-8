@@ -7,6 +7,13 @@ spring:
     url: jdbc:mysql://${local-db.mysql.host}:${local-db.mysql.port}/${local-db.mysql.name}
     username: root
     password: ${local-db.mysql.password}
+    hikari:
+      maximum-pool-size: 50 # 동시성 테스트를 위한 커넥션 풀 크기 증가 (기본값: 10)
+      minimum-idle: 10
+      connection-timeout: 10000  # 10초
+      validation-timeout: 5000
+      idle-timeout: 600000  # 10분
+      max-lifetime: 1800000  # 30분
 
   jpa:
     properties:
