@@ -49,6 +49,7 @@ public class Ticket extends BaseTimeEntity {
         this.name = name;
         this.description = description;
         this.totalStock = totalStock;
+        this.remainStock = totalStock;
         this.startAt = startAt;
         this.endAt = endAt;
     }
@@ -65,7 +66,7 @@ public class Ticket extends BaseTimeEntity {
     }
 
     // 이벤트 기간 확인 (선택)
-    private void validateEventPeriod() {
+    public void validateEventPeriod() {
         if (startAt != null && endAt != null) {
             LocalDateTime now = LocalDateTime.now();
 
