@@ -36,10 +36,9 @@ public class TicketService {
         return savedTickets.getId();
     }
 
-    /**
-     * 선착순 티켓 구매 로직: 현재 동시성 제어가 없으므로 문제가 발생함!
-     */
-    @Transactional
+    // 선착순 티켓 구매 로직: 현재 동시성 제어가 없으므로 문제가 발생함!
+    // timeout: 5분 내에 트랜잭션이 완료되지 않으면 롤백 진행
+    @Transactional(timeout = 300)
     public Long orderTicket(Long ticketId, Long userId) {
         // 여러 스레드가 동시에 같은 값을 읽을 수 있음
         Ticket ticket = ticketRepository.findById(ticketId)
