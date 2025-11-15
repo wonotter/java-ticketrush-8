@@ -21,7 +21,7 @@ import wonotter.java_ticketrush_8.repository.TicketRepository;
 
 @Slf4j
 @SpringBootTest
-public class TicketConcurrencyTest {
+class TicketServiceTest {
 
     @Autowired
     private TicketService ticketService;
