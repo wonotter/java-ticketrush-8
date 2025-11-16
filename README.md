@@ -2,6 +2,45 @@
 
 > 선착순 이벤트/티켓팅 API 서버를 구축하기 위해 단계적으로 학습하며 솔루션을 적용해보는 오픈 미션 프로젝트입니다.
 
+## 프로젝트 설정 방법
+
+> Docker를 사용하여 MySQL 데이터베이스를 연결하기 위한 설정 방법을 기술하였습니다.
+
+1. Docker 공식 홈페이지나 구글 검색을 통해 Docker Desktop을 설치한다.
+    - [Docker 공식 홈페이지](https://www.docker.com/)
+    - [Junesker 티스토리: Docker 설치 방법](https://junesker.tistory.com/94)
+
+2. 아래 형식과 같이 `application-local.yml`, `env` 파일을 작성한다.
+    - 데이터베이스 이름, 비밀번호, 포트 번호는 2개 파일 모두 동일하게 작성해야 한다.
+
+`application-local.yml` 파일
+
+```yaml
+local-db:
+  mysql:
+    host: localhost
+    port: ${사용할 포트 번호} # 3306, 3307 등
+    name: ${사용할 데이터베이스 이름} # ticketrush, mydb 등
+    password: ${사용할 데이터베이스 비밀번호} # 12345678, ticketpassword 등
+```
+
+`.env` 파일
+
+```text
+MYSQL_DATABASE=${사용할 데이터베이스 이름} # ticketrush, mydb 등
+MYSQL_ROOT_PASSWORD=${사용할 데이터베이스 비밀번호} # 12345678, ticketpassword 등 
+MYSQL_PORT=${사용할 포트 번호} # 3306, 3307 등
+```
+
+3. `docker-compose.yml` 파일이 있는 경로(프로젝트 최상단 경로)에서
+   아래 명령을 실행하여 컨테이너를 생성한다.
+    - 파일에 적힌 명령어의 자세한 내용이 궁금하다면 Docker Hub에 있는
+      [MySQL 공식 이미지 홈페이지](https://hub.docker.com/_/mysql)를 참고한다.
+
+```text
+docker-compose up -d
+```
+
 ## 기능 요구 사항
 
 100명에게만 선착순으로 이벤트(쿠폰, 티켓 등)를 제공하는 API 서버를 구축한다.
