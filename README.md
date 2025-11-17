@@ -95,3 +95,5 @@ docker-compose up -d
 - [ ] 동시성 문제를 보여줄 수 있는 테스트 코드를 작성한다.
 - [ ] `synchronized`를 사용하여 동시성 문제를 해결한다.
 - [ ] `ReentrantLock`을 사용하여 동시성 문제를 해결한다.
+- [ ] `비관적 락(Pessimistic Lock)`을 사용하여 동시성 문제를 해결한다.
+- [ ] `낙관적 락(Optimistic Lock)`을 사용하여 동시성 문제를 해결한다.
