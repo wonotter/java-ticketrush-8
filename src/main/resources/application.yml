@@ -31,6 +31,9 @@ spring:
 
 logging:
   level:
+    wonotter.java_ticketrush_8: debug
     org:
       hibernate:
-        type: info
+        orm:
+          jdbc:
+            bind: trace
