@@ -15,5 +15,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     // 비관적(배타적) 락 적용
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM Ticket t WHERE t.id = :id")
-    Optional<Ticket> findByIdWithLock(@Param("id") Long id);
+    Optional<Ticket> findByIdWithPessimisticLock(@Param("id") Long id);
+
+    // 낙관적 락 적용
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("SELECT t FROM Ticket t WHERE t.id = :id")
+    Optional<Ticket> findByIdWithOptimisticLock(@Param("id") Long id);
 }
