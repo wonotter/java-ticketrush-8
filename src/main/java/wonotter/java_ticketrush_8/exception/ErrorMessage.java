@@ -7,7 +7,8 @@ public enum ErrorMessage {
     EVENT_ALREADY_END("이벤트가 이미 종료되었습니다."),
 
     TICKET_NOT_FOUND("존재하지 않는 티켓입니다."),
-    TICKET_ALREADY_ORDERED("이미 주문한 티켓입니다");
+    TICKET_ALREADY_ORDERED("이미 주문한 티켓입니다"),
+    TICKET_ORDER_FAILED("티켓 주문에 실패했습니다. 잠시 후 다시 시도해주세요.");
 
     private final String ERROR_PREFIX = "[ERROR] ";
 
