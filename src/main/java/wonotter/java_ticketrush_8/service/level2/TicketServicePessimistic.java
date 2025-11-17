@@ -20,7 +20,8 @@ public class TicketServicePessimistic {
 
     @Transactional(timeout = 300)
     public Long orderTicket(Long ticketId, Long userId) {
-        Ticket ticket = ticketRepository.findByIdWithLock(ticketId)
+        // 비관적 락을 사용하여 티켓 조회
+        Ticket ticket = ticketRepository.findByIdWithPessimisticLock(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TICKET_NOT_FOUND.getMessage()));
 
         ticket.validateEventPeriod();
