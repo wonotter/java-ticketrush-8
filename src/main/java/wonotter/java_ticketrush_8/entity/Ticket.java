@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,6 +43,10 @@ public class Ticket extends BaseTimeEntity {
 
     // 선착순 이벤트 종료 시간 (선택)
     private LocalDateTime endAt;
+
+    // 낙관적 락을 위한 버전 필드
+    @Version
+    private Long version;
 
     @Builder
     public Ticket(String name, String description, Integer totalStock,
