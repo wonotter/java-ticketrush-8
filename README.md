@@ -4,7 +4,7 @@
 
 ## 프로젝트 설정 방법
 
-> Docker를 사용하여 MySQL 데이터베이스를 연결하기 위한 설정 방법을 기술하였습니다.
+> Docker를 통해 MySQL, Redis 데이터베이스를 컨테이너로 구성하고, 이를 연결하기 위한 설정 방법을 기술하였습니다.
 
 1. Docker 공식 홈페이지나 구글 검색을 통해 Docker Desktop을 설치한다.
     - [Docker 공식 홈페이지](https://www.docker.com/)
@@ -22,6 +22,11 @@ local-db:
     port: ${사용할 포트 번호} # 3306, 3307 등
     name: ${사용할 데이터베이스 이름} # ticketrush, mydb 등
     password: ${사용할 데이터베이스 비밀번호} # 12345678, ticketpassword 등
+
+  redis:
+    host: localhost
+    port: ${사용할 포트 번호} # 6379 등
+    password: ${사용할 데이터베이스 비밀번호} # 12345678, redispassword 등
 ```
 
 `.env` 파일
@@ -30,15 +35,29 @@ local-db:
 MYSQL_DATABASE=${사용할 데이터베이스 이름} # ticketrush, mydb 등
 MYSQL_ROOT_PASSWORD=${사용할 데이터베이스 비밀번호} # 12345678, ticketpassword 등 
 MYSQL_PORT=${사용할 포트 번호} # 3306, 3307 등
+
+REDIS_PORT=${사용할 포트 번호} # 6379 등
+REDIS_PASSWORD=${사용할 데이터베이스 비밀번호} # 12345678, redispassword 등
 ```
 
 3. `docker-compose.yml` 파일이 있는 경로(프로젝트 최상단 경로)에서
    아래 명령을 실행하여 컨테이너를 생성한다.
-    - 파일에 적힌 명령어의 자세한 내용이 궁금하다면 Docker Hub에 있는
-      [MySQL 공식 이미지 홈페이지](https://hub.docker.com/_/mysql)를 참고한다.
+    - 파일에 적힌 명령어와 설정 값이 궁금하다면 Docker Hub에 있는 MySQL, Redis 이미지 공식 홈페이지를 참고한다.
+    - [MySQL 공식 이미지 홈페이지](https://hub.docker.com/_/mysql)
+    - [Redis 공식 이미지 홈페이지](https://hub.docker.com/_/redis)
 
 ```text
+# 컨테이너 생성
 docker-compose up -d
+
+---
+
+# 컨테이너 재시작 등 모두 삭제했다가 다시 구성하고 싶은 경우 사용
+# 컨테이너 삭제
+docker-compose down
+
+# 컨테이너와 볼륨 모두 삭제
+docker-compose down -v
 ```
 
 ## 기능 요구 사항
@@ -97,3 +116,5 @@ docker-compose up -d
 - [ ] `ReentrantLock`을 사용하여 동시성 문제를 해결한다.
 - [ ] `비관적 락(Pessimistic Lock)`을 사용하여 동시성 문제를 해결한다.
 - [ ] `낙관적 락(Optimistic Lock)`을 사용하여 동시성 문제를 해결한다.
+- [ ] `Redis` 데이터베이스를 사용하기 위해 MySQL 외에 추가로 연결 작업을 진행한다.
+- [ ] `Redisson 분산 락`을 사용하여 동시성 문제를 해결한다.
