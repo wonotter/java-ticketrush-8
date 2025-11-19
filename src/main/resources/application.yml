@@ -15,6 +15,12 @@ spring:
       idle-timeout: 600000  # 10분
       max-lifetime: 1800000  # 30분
 
+  data:
+    redis:
+      host: ${local-db.redis.host}
+      port: ${local-db.redis.port}
+      password: ${local-db.redis.password}
+
   jpa:
     properties:
       hibernate:

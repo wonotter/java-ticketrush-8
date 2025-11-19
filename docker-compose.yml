@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: java-ticketrush-8
+    container_name: java-ticketrush-8-mysql
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     environment:
@@ -17,5 +17,15 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
 
+  redis:
+    image: redis:7-alpine
+    container_name: java-ticketrush-8-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+
 volumes:
   mysql_data:
+  redis_data:
