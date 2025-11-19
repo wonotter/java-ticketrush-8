@@ -1,4 +1,4 @@
-package wonotter.java_ticketrush_8.controller;
+package wonotter.java_ticketrush_8.controller.level0;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import wonotter.java_ticketrush_8.dto.TicketCreateRequest;
 import wonotter.java_ticketrush_8.dto.TicketOrderRequest;
 import wonotter.java_ticketrush_8.dto.TicketOrderResponse;
 import wonotter.java_ticketrush_8.entity.Ticket;
-import wonotter.java_ticketrush_8.service.TicketService;
+import wonotter.java_ticketrush_8.service.level0.TicketService;
 
 @Slf4j
 @RestController

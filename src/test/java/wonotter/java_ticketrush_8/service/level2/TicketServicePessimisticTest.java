@@ -18,7 +18,7 @@ import wonotter.java_ticketrush_8.dto.TicketCreateRequest;
 import wonotter.java_ticketrush_8.entity.Ticket;
 import wonotter.java_ticketrush_8.repository.TicketOrderRepository;
 import wonotter.java_ticketrush_8.repository.TicketRepository;
-import wonotter.java_ticketrush_8.service.TicketService;
+import wonotter.java_ticketrush_8.service.level0.TicketService;
 
 @Slf4j
 @SpringBootTest

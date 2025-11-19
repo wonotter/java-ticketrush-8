@@ -1,4 +1,4 @@
-package wonotter.java_ticketrush_8.service;
+package wonotter.java_ticketrush_8.service.level0;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

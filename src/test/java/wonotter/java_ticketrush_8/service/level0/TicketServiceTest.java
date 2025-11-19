@@ -1,4 +1,4 @@
-package wonotter.java_ticketrush_8.service;
+package wonotter.java_ticketrush_8.service.level0;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
