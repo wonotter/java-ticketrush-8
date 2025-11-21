@@ -118,3 +118,192 @@ docker-compose down -v
 - [x] `낙관적 락(Optimistic Lock)`을 사용하여 동시성 문제를 해결한다.
 - [x] `Redis` 데이터베이스를 사용하기 위해 MySQL 외에 추가로 연결 작업을 진행한다.
 - [x] `Redisson 분산 락`을 사용하여 동시성 문제를 해결한다.
+
+## 동시성 문제 해결 결과
+
+> 각 레벨 별로 동시성 문제가 해결되었음을 검증한 결과물
+(테스트 코드 실행 결과, JMeter 부하 테스트 결과)과 함께 간단한 설명을 기술하였습니다.
+
+> 동시성 문제 해결 과정에 대한 **자세한 설명**은
+[Ticket Rush 프로젝트 진행 과정(Notion)]()을 참고해 주시면 감사하겠습니다.
+
+### Level 0
+
+#### 1. 테스트 코드 실행 결과 (TicketServiceTest)
+
+![img.png](images/level0/ticketservice_test.png)
+
+재고가 총 100개인 티켓을 동시에 1000명이 주문하고자 시도하였다.
+
+현재 Level 0은 동시성 제어가 없는 코드이므로, **1000명 모두 성공하고 재고가 65개 남아있는 치명적인 문제점이 발생하였다.**
+
+즉, 각 스레드의 접근 속도가 너무 빠른 나머지 하나의 재고를 두고 2개 이상의 스레드가 동시에 접근하는
+**경쟁 조건(Race Condition)** 이 발생한 것이다.
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+![img.png](images/level0/ticketservice_jmeter1.png)
+
+JMeter로 실행해본 결과 역시 API 요청이 모두 성공하였으며,
+1000명의 사용자가 모두 주문에 성공하였다는 동시성 문제가 발생하였다.
+
+![img.png](images/level0/ticketservice_jmeter2.png)
+
+JMeter 기능 중 하나인 `HTML report`를 통해 보고서를 생성해보았다.
+전체 통계 결과에서도 모든 요청이 성공하였음을 확인할 수 있다.
+
+### Level 1
+
+### synchronized
+
+#### 1. 테스트 코드 실행 결과
+
+![img.png](images/level1/synchronized_test.png)
+
+`synchronized` 키워드를 통해 동시성 제어를 구현한 결과이다.
+
+재고 100개를 기준으로 1000명 사용자가 동시 접속한 결과
+**정확히 100명은 성공했고, 나머지 900명은 실패**하였음을 확인할 수 있다.
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+![img.png](images/level1/synchronized_jmeter1.png)
+
+JMeter로 성능 부하를 테스트한 결과 처음 접속한 100개의 스레드는 정상적으로 주문에 성공하였고, 이후에 접근한 스레드는 티켓 재고가 존재하지 않아 주문에 실패하였다.
+
+![img.png](images/level1/synchronized_jmeter2.png)
+
+보고서 결과 역시 전체 요청 중 `10%(100명)은 성공`하였고, `90%(900명)은 실패`하였다는 결과가 출력되었다.
+
+### ReentrantLock
+
+#### 1. 테스트 코드 실행 결과
+
+![img.png](images/level1/reentrantlock_test.png)
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+![img.png](images/level1/reentrantlock_jmeter1.png)
+
+![img_1.png](images/level1/reentrantlock_jmeter2.png)
+
+`ReentrantLock` 클래스를 통해 구현한 결과이다. 동시성 제어 결과는 `synchronized`와 동일하므로 설명은 생략하겠다.
+
+### synchronized & ReentrantLock 한계점
+
+`synchronized`, `ReentrantLock` 모두 단일 서버, 단일 JVM 에서만 동시성 제어가 가능하다는 한계점이 있다.
+
+즉, 백엔드 서버가 2대만 되어도 해결한줄 알았던 동시성 문제는 다시 나타난다.
+
+8080, 8081 포트로 2대의 서버를 실행한 후, 아래 사진과 같이 쓰레드 그룹을 2개로 나누어
+8080과 8081 포트 서버에 티켓 주문 요청을 분산시켜서 테스트해 보았다.
+
+![img.png](images/level1/sync_reentrant_limit.png)
+
+실행 결과 PASS 값이 10% 이어야 정상적인 상황(1000명 중 100명 주문 성공)에서 `17.7%` 수치를 기록하였다.
+
+![img.png](images/level1/sync_reentrant_jmeter.png)
+
+100명만 성공해야 하는 티켓 구매가 177명이 성공했다는 뜻이며, 동시성 문제가 다시 발생하였음을 확인하였다.
+
+### Level 2
+
+다중 서버 환경에서는 동시성 제어가 불가능하다는 Level 1의 한계점을 극복하기 위해,
+데이터베이스 레벨에서 동시성을 제어하는 새로운 기법이 필요하다.
+
+낙관적, 비관적 락은 데이터베이스 레벨에서 동시성을 제어해주는 기법이다.
+
+### 낙관적 락(Optimistic Lock)
+
+#### 1. 테스트 코드 실행 결과
+
+![img.png](images/level2/optimisticlock_test.png)
+
+낙관적 락을 통해 구현한 결과이다. 전체 사용자 1000명 중 100명이 성공하고,
+나머지 900명은 실패하였음을 확인할 수 있다.
+
+테스트 코드는 단일 서버에서 실행한 것과 동일하므로,
+`synchronized`, `ReentrantLock`과 비교하였을 때 차이점이 존재하지 않는다.
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+서버 2대 포트를 각각 8080, 8081로 설정하여 실행한 후, API 요청을 진행한 결과이다.
+
+![img_1.png](images/level2/optimisticlock_db.png)
+
+`ticket_orders` 테이블에 저장된 결과를 보면, 티켓 주문 수량이 정확히 100개인 것을 확인할 수 있다.
+
+![img.png](images/level2/optimisticlock_jmeter.png)
+
+PASS는 10%, FAIL이 90% 이므로 총 1000명 사용자 중 100명만 티켓 주문에 성공했다.
+
+즉, Level1 에서는 극복하지 못하였던 **다중 서버에서의 동시성 문제**를 해결하였다는 의미이다.
+
+### 비관적 락(Pessimistic Lock)
+
+#### 1. 테스트 코드 실행 결과
+
+![img.png](images/level2/pessimisticlock_test.png)
+
+비관적 락을 통해 구현한 테스트 코드 실행 결과이다. 낙관적 락과 동일한 결과임을 확인할 수 있다.
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+낙관적 락과 동일하게 서버 2대인 환경에서 테스트한 결과이다.
+
+![img_2.png](images/level2/pessimisticlock_db.png)
+
+`ticket_orders` 테이블에 저장된 결과를 보면,
+낙관적 락과 동일하게 티켓 주문 수량이 총 100개임을 확인할 수 있다.
+
+![img_1.png](images/level2/pessimisticlock_jmeter.png)
+
+JMeter를 사용한 HTML 보고서 통계 역시 10% PASS, 90% FAIL 이므로
+총 1000명 중 100명만 티켓 주문에 성공하였음을 확인할 수 있다.
+
+### 낙관적 & 비관적 락의 한계점
+
+앞서 언급했듯이, 낙관적 & 비관적 락 모두 데이터베이스 레벨에서 동시성을 제어하는 기법이다.
+
+따라서 DB가 여러 개인 **다중 데이터베이스** 환경에서는 해당 기법으로 동시성 제어가 불가능하다.
+
+![img.png](images/level2/opt_pess_limit.png)
+
+(출처: https://velog.io/@hgs-study/redisson-distributed-lock)
+
+이 경우 사용해 볼 수 있는 방법은 Redis 분산 락을 추가로 배치하여
+데이터베이스의 정합성을 준수하는 것이다.
+
+![img.png](images/level2/opt_pess_redis.png)
+
+(출처: https://velog.io/@hgs-study/redisson-distributed-lock)
+
+### Level 3
+
+### Redisson 분산 락
+
+Redisson은 Redis 클라이언트 중 하나로, 자체 TTL을 제공하고 Pub/Sub 기반으로 동작한다.
+
+분산락 기능을 고수준으로 추상화하여 제공하므로, 락 획득, 해제, 자동 연장 등 복잡한 로직을 직접 작성할 필요 없이 간단한 API 호출만으로 분산락을 사용할 수 있다.
+
+#### 1. 테스트 코드 실행 결과
+
+![img.png](images/level3/redisson_test.png)
+
+테스트 코드 실행 결과 성공 900명, 실패 100명으로 정상적으로 티켓 주문에 성공한 것을 확인할 수 있다.
+
+#### 2. JMeter 테스트 결과 (API Test)
+
+낙관적 & 비관적 락과 동일하게 2대의 서버를 구성하여 테스트한 결과이다.
+
+Level 2의 낙관적 & 비관적 락 방식의 한계점을 해결하였음을 검증하기 위해서는 다중 데이터베이스 구성이 필요했으나,
+
+설계 및 구현 상의 높은 복잡도로 인해 실제 테스트 환경 구축에는 제약이 있었다.
+
+![img_2.png](images/level3/redisson_db.png)
+
+`ticket_orders` 테이블에 저장된 결과를 보면 티켓 주문 수량이 총 100개임을 확인하였다.
+
+![img_1.png](images/level3/redisson_jmeter.png)
+
+JMeter HTML 보고서 결과 역시 `10% PASS`, `90% FAIL`로 총 1000명 사용자 중 100명이 티켓 주문에 성공하였음을 확인할 수 있다.
