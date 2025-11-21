@@ -60,6 +60,18 @@ docker-compose down
 docker-compose down -v
 ```
 
+## 포트 별 서버 실행 방법 (서버 2대 실행 방법)
+
+`cmd`, `Powershell`, `bash`와 같은 터미널 창에서 프로젝트 최상단 경로로 이동한 후, 아래 명령어를 실행한다.
+
+```text
+# application-server1.yml (profile=server1)로 서버 실행 (포트 번호: 8080)
+./gradlew bootRun --args='--spring.profiles.active=server1'
+
+# application-server2.yml (profile=server2)로 서버 실행 (포트 번호: 8081)
+./gradlew bootRun --args='--spring.profiles.active=server2'
+```
+
 ## 기능 요구 사항
 
 100명에게만 선착순으로 이벤트(쿠폰, 티켓 등)를 제공하는 API 서버를 구축한다.
