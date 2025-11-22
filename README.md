@@ -2,6 +2,10 @@
 
 > 선착순 이벤트/티켓팅 API 서버를 구축하기 위해 단계적으로 학습하며 솔루션을 적용해보는 오픈 미션 프로젝트입니다.
 
+> 프로젝트에 대한 전체 설명과
+> 소감문은 [오픈 미션: Ticket Rush 프로젝트 소감문](https://accidental-radon-18f.notion.site/Ticket-Rush-2ac6fd8c80d280c0a545cb5b5b16de0b)
+> 을 참고해주세요!
+
 ## 프로젝트 설정 방법
 
 > Docker를 통해 MySQL, Redis 데이터베이스를 컨테이너로 구성하고, 이를 연결하기 위한 설정 방법을 기술하였습니다.
@@ -137,7 +141,8 @@ docker-compose down -v
 (테스트 코드 실행 결과, JMeter 부하 테스트 결과)과 함께 간단한 설명을 기술하였습니다.
 
 > 동시성 문제 해결 과정에 대한 **자세한 설명**은
-[Ticket Rush 프로젝트 진행 과정(Notion)]()을 참고해 주시면 감사하겠습니다.
+[오픈 미션: Ticket Rush 프로젝트 소감문, 동시성 문제 해결 과정(Notion)](https://accidental-radon-18f.notion.site/Ticket-Rush-2ac6fd8c80d280c0a545cb5b5b16de0b?pvs=97#2ac6fd8c80d2801988f5cd3aeeebd52f)
+> 을 참고해 주시면 감사하겠습니다.
 
 ### Level 0
 
